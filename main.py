@@ -129,7 +129,7 @@ class LightingApp:
         self.root.update_idletasks()
         self._sync_size()
         self._draw()
-        self.root.after(33, self._tick)
+        self.root.after(16, self._tick)  # ~60 FPS (если успеваем отрисовать кадр)
         self.root.lift()
         try:
             self.root.attributes("-topmost", True)
@@ -278,7 +278,8 @@ class LightingApp:
             if not self.view.winfo_exists():
                 return
             if self.cam_moving:
-                self.cam_t += 0.008 * self.cam_dir
+                # быстрее проход A↔B (~1.5–2 с в одну сторону при 60 FPS)
+                self.cam_t += 0.018 * self.cam_dir
                 if self.cam_t >= 1.0:
                     self.cam_t = 1.0
                     self.cam_dir = -1.0
@@ -286,7 +287,7 @@ class LightingApp:
                     self.cam_t = 0.0
                     self.cam_dir = 1.0
             if self.spin_object:
-                self.spin_angle += 0.03
+                self.spin_angle += 0.055
             self._draw()
         except tk.TclError:
             return
@@ -295,7 +296,7 @@ class LightingApp:
             import traceback
             traceback.print_exc()
             return
-        self.root.after(33, self._tick)
+        self.root.after(16, self._tick)
 
     def _on_key(self, event: tk.Event) -> None:
         key = event.keysym.lower()
